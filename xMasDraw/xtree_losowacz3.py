@@ -11,6 +11,7 @@ This version:
 - asks (Polish): "CZY WSZYSCY SĄ POD CHOINKĄ" (Tak/Nie)
   - If "Tak": counts down 5→0, performs draw in-process, writes output files
   - After files are ready, clears the screen and prints the tree again with ID pairs (giver_id -> receiver_id) next to the trunk
+  - The ID pairs are shuffled before being placed next to the trunk
   - If "Nie": exits
 Usage example:
   python tree_and_losowacz.py participants.csv --method sattolo --seed 42
@@ -392,14 +393,17 @@ def main(argv):
         print("Błąd przy zapisie plików:", e, file=sys.stderr)
         sys.exit(1)
 
-    # After files are ready: prepare ID pair strings for display and print the tree again
+    # After files are ready: prepare ID pair strings for display, shuffle them, and print the tree again
     pair_strings: List[str] = []
     for p in pairs:
         giver = p.get('giver_id', '') or p.get('giver_name', '')
         receiver = p.get('receiver_id', '') or p.get('receiver_name', '')
         pair_strings.append(f"{giver} -> {receiver}")
 
-    # Render final tree lines with ID pairs next to trunk
+    # Shuffle the pair strings before final display
+    random.shuffle(pair_strings)
+
+    # Render final tree lines with shuffled ID pairs next to trunk
     final_tree_lines = make_tree_lines_with_name_columns(size=size,
                                                         names=pair_strings,
                                                         cols=cols,
@@ -413,7 +417,7 @@ def main(argv):
     # Clear screen once before final display to show results clearly
     clear_screen()
     # Optional header
-    print("WYNIKI LOSOWANIA (ID pary obok pnia):\n")
+    print("WYNIKI LOSOWANIA (ID pary obok pnia, kolejność losowa):\n")
     for ln in final_tree_lines:
         print(ln, flush=True)
         if delay:

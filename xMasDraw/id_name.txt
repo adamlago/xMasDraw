@@ -1,9 +1,0 @@
-id,name
-1,Jan
-2,Anna
-3,Marek
-4,Ola
-5,Piotr
-6,Kasia
-7,Paweł
-8,Zofia
